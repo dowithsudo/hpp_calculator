@@ -89,4 +89,105 @@ yang ingin menentukan harga jual secara **rasional, transparan, dan mudah dipaha
 
 ### ✅ Perhitungan HPP
 HPP dihitung otomatis dari:
+- Subtotal Bahan Produksi
+- Subtotal Bahan Packing
+- Total Overhead- 
+- HPP disimpan ke kolom `products.hpp_total`
+- Ditampilkan di daftar produk
 
+---
+
+### ✅ Navigasi SPA
+- Dashboard
+- Produk
+- Detail Resep
+- Navigasi internal tanpa browser back
+- Tombol “← Kembali ke Produk” di detail resep
+
+---
+
+## 🧮 Struktur Database Utama
+
+### `raw_materials`
+- id
+- user_id
+- name
+- purchase_unit
+- purchase_qty
+- purchase_price
+- usage_unit
+- price_per_usage_unit
+
+### `products`
+- id
+- user_id
+- name
+- notes
+- hpp_total
+
+### `recipe_items`
+- id
+- user_id
+- product_id
+- raw_material_id
+- qty_used
+- cost
+- category
+
+### `overhead_costs`
+- id
+- user_id
+- product_id
+- name
+- amount
+
+---
+
+## 🚀 Modul Marketplace (NEXT)
+
+Marketplace **bukan modul penjualan**, tapi **simulator biaya & margin**.
+
+### Konsep:
+- Ambil produk + HPP
+- Input harga jual
+- Tambahkan biaya marketplace:
+  - admin fee
+  - service fee
+  - iklan
+  - biaya lain-lain
+- Biaya bisa:
+  - nominal
+  - atau persentase
+
+### Output:
+- Total cost
+- Margin nominal
+- Margin %
+
+Marketplace yang didukung:
+- Shopee
+- Tokopedia
+- TikTok
+- Lazada
+
+---
+
+## 🛠️ Cara Setup (Local Development)
+
+```bash
+# clone repo
+git clone <repo-url>
+cd hpp-calculator
+
+# install dependency
+npm install
+
+# copy env
+cp .env.example .env
+
+# isi env
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+
+# run dev
+npm run dev
