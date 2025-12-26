@@ -57,6 +57,7 @@ export async function getFeePresetsByMarketplaceCode(
 .select('*')
 .eq('marketplace_id', marketplace.id)
 .eq('is_visible', true)
+.order('sort_order', { ascending: true })
 
 
   // ambil preset global + preset custom user

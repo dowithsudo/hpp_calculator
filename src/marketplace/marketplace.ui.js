@@ -150,16 +150,15 @@ export async function renderMarketplace(session, container) {
     });
 
     // ubah tipe custom fee (% / Rp)
-el.querySelectorAll('[data-type]').forEach(sel => {
-  sel.onchange = () => {
-    const fee = fees.find(f => f.id === sel.dataset.type)
-    if (fee) {
-      fee.type = sel.value
-      renderSummary()
-    }
-  }
-})
-
+    el.querySelectorAll("[data-type]").forEach((sel) => {
+      sel.onchange = () => {
+        const fee = fees.find((f) => f.id === sel.dataset.type);
+        if (fee) {
+          fee.type = sel.value;
+          renderSummary();
+        }
+      };
+    });
   }
 
   function addCustomFee() {
@@ -176,8 +175,6 @@ el.querySelectorAll('[data-type]').forEach(sel => {
     renderFees();
     renderSummary();
   }
-  
-
 
   /* =========================
      SUMMARY
@@ -315,30 +312,39 @@ el.querySelectorAll('[data-type]').forEach(sel => {
     el.innerHTML = data
       .map(
         (d) => `
-      <div class="border-bottom py-2 d-flex justify-content-between align-items-center">
-        <div>
-          <a href="#" class="product-link"
-             data-product="${d.products.id}">
-            <strong>${d.products.name}</strong>
-          </a><br>
-          <small class="text-muted">
-            Harga ${formatRupiah(d.selling_price)} |
-            Cost ${formatRupiah(d.total_cost)} |
-            Margin ${formatRupiah(d.margin)} (${d.margin_percent.toFixed(2)}%)
-          </small>
-        </div>
-        <div>
-          <button class="btn btn-sm btn-outline-primary me-1"
-            data-edit="${d.id}">
-            Edit
-          </button>
-          <button class="btn btn-sm btn-outline-danger"
-            data-del="${d.id}">
-            Hapus
-          </button>
-        </div>
+  <div class="simulation-item border-bottom py-2" data-id="${d.id}">
+    
+    <div class="d-flex justify-content-between align-items-center simulation-row"
+         style="cursor:pointer">
+      <div>
+        <span class="product-link text-primary"
+      role="button"
+      data-product="${d.products.id}"
+      style="cursor:pointer">
+  <strong>${d.products.name}</strong>
+</span>
+<br>
+        <small class="text-muted">
+          Harga ${formatRupiah(d.selling_price)} |
+          Cost ${formatRupiah(d.total_cost)} |
+          Margin ${formatRupiah(d.margin)} (${d.margin_percent.toFixed(2)}%)
+        </small>
       </div>
-    `
+      <div>
+        <button class="btn btn-sm btn-outline-primary me-1"
+          data-edit="${d.id}">
+          Edit
+        </button>
+        <button class="btn btn-sm btn-outline-danger"
+          data-del="${d.id}">
+          Hapus
+        </button>
+      </div>
+    </div>
+
+    <div class="simulation-detail d-none mt-2"></div>
+  </div>
+`
       )
       .join("");
 
@@ -346,6 +352,7 @@ el.querySelectorAll('[data-type]').forEach(sel => {
     el.querySelectorAll(".product-link").forEach((a) => {
       a.onclick = (e) => {
         e.preventDefault();
+        e.stopPropagation(); // 🔥 INI YANG HILANG
         navigate("product-detail", a.dataset.product);
       };
     });
@@ -365,6 +372,83 @@ el.querySelectorAll('[data-type]').forEach(sel => {
           renderFees();
           renderSummary();
         });
+      };
+    });
+
+    // klik baris simulasi → toggle detail
+    el.querySelectorAll(".simulation-row").forEach((row) => {
+      row.onclick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // kalau klik link produk / tombol → JANGAN buka detail
+        if (e.target.closest("a") || e.target.closest("button")) return;
+
+        const wrapper = row.closest(".simulation-item");
+        const detailEl = wrapper.querySelector(".simulation-detail");
+        const simId = wrapper.dataset.id;
+
+        // toggle close
+        if (!detailEl.classList.contains("d-none")) {
+          detailEl.classList.add("d-none");
+          detailEl.innerHTML = "";
+          return;
+        }
+
+        const { data } = await supabase
+          .from("marketplace_simulations")
+          .select(
+            `
+        hpp,
+        total_cost,
+        margin,
+        margin_percent,
+        marketplace_simulation_fees (
+          name,
+          calculated_cost
+        )
+      `
+          )
+          .eq("id", simId)
+          .single();
+
+        detailEl.innerHTML = `
+      <div class="bg-light border rounded p-3">
+        <div><strong>HPP:</strong> ${formatRupiah(data.hpp)}</div>
+
+        <hr>
+
+        <strong>Biaya Marketplace</strong>
+        <ul class="list-unstyled ms-2">
+          ${data.marketplace_simulation_fees
+            .map(
+              (f) => `
+            <li class="d-flex justify-content-between">
+              <span>${f.name}</span>
+              <span>${formatRupiah(f.calculated_cost)}</span>
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
+
+        <hr>
+
+        <div class="d-flex justify-content-between">
+          <span>Total Cost</span>
+          <strong>${formatRupiah(data.total_cost)}</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Margin</span>
+          <strong>
+            ${formatRupiah(data.margin)}
+            (${data.margin_percent.toFixed(2)}%)
+          </strong>
+        </div>
+      </div>
+    `;
+
+        detailEl.classList.remove("d-none");
       };
     });
 
