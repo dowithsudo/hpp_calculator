@@ -5,50 +5,75 @@ import { navigate } from '../main.js'
 export function renderDashboard(session, container) {
   container.innerHTML = `
     <div>
-      <h3 class="mb-4">Dashboard</h3>
+      <h4 class="mb-4">Dashboard</h4>
 
       <div class="row g-3">
-        <div class="col-md-6">
+
+        <!-- PRODUK -->
+        <div class="col-md-4">
           <div class="card h-100">
             <div class="card-body">
-              <h5 class="card-title">Daftar Produk</h5>
-              <p class="card-text">
-                Kelola produk, resep, dan HPP.
+              <h5 class="card-title">Produk & HPP</h5>
+              <p class="card-text text-muted">
+                Kelola produk, resep, dan hitung HPP.
               </p>
               <button
-                id="btnProducts"
-                class="btn btn-primary">
+                class="btn btn-outline-primary btn-sm"
+                id="goProducts">
                 Kelola Produk
               </button>
             </div>
           </div>
         </div>
 
-        <div class="col-md-6">
+        <!-- BAHAN -->
+        <div class="col-md-4">
           <div class="card h-100">
             <div class="card-body">
-              <h5 class="card-title">Master Bahan</h5>
-              <p class="card-text">
-                Kelola bahan baku dan harga.
+              <h5 class="card-title">Bahan Baku</h5>
+              <p class="card-text text-muted">
+                Master bahan dan harga satuan.
               </p>
               <button
-                id="btnMaterials"
-                class="btn btn-secondary">
-                Master Bahan
+                class="btn btn-outline-primary btn-sm"
+                id="goMaterials">
+                Kelola Bahan
               </button>
             </div>
           </div>
         </div>
+
+        <!-- MARKETPLACE -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Marketplace Simulator</h5>
+              <p class="card-text text-muted">
+                Hitung biaya marketplace dan margin produk.
+              </p>
+              <button
+                class="btn btn-outline-primary btn-sm"
+                id="goMarketplace">
+                Buka Marketplace
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   `
 
-  // ===== ROUTING BUTTONS =====
-  container.querySelector('#btnProducts').onclick = () => {
+  // ===== EVENTS =====
+  document.getElementById('goProducts').onclick = () => {
     navigate('products')
   }
 
-  container.querySelector('#btnMaterials').onclick = () => {
+  document.getElementById('goMaterials').onclick = () => {
     navigate('materials')
+  }
+
+  document.getElementById('goMarketplace').onclick = () => {
+    navigate('marketplace')
   }
 }

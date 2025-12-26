@@ -10,6 +10,9 @@ import { renderProducts } from './products/products.ui.js'
 import { renderMaterials } from './materials/materials.ui.js'
 import { renderProductDetail } from './products/product-detail.ui.js'
 
+// 👉 TAMBAHAN MARKETPLACE
+import { marketplacePage } from './marketplace/marketplace.js'
+
 let sessionCache = null
 let currentRoute = { name: 'dashboard', params: null }
 
@@ -34,11 +37,31 @@ async function render() {
   app.innerHTML = `
     <nav class="navbar navbar-dark bg-dark">
       <div class="container-fluid">
-        <button
-          id="navDashboard"
-          class="btn btn-outline-light btn-sm">
-          ← Dashboard
-        </button>
+        <div class="d-flex gap-2">
+          <button
+            id="navDashboard"
+            class="btn btn-outline-light btn-sm">
+            Dashboard
+          </button>
+
+          <button
+            id="navProducts"
+            class="btn btn-outline-light btn-sm">
+            Produk
+          </button>
+
+          <button
+            id="navMaterials"
+            class="btn btn-outline-light btn-sm">
+            Bahan
+          </button>
+
+          <button
+            id="navMarketplace"
+            class="btn btn-outline-light btn-sm">
+            Marketplace
+          </button>
+        </div>
 
         <span class="navbar-text text-white">
           HPP Calculator
@@ -55,8 +78,21 @@ async function render() {
     <div id="page" class="container mt-4"></div>
   `
 
+  // ===== NAV EVENTS =====
   document.getElementById('navDashboard').onclick = () => {
     navigate('dashboard')
+  }
+
+  document.getElementById('navProducts').onclick = () => {
+    navigate('products')
+  }
+
+  document.getElementById('navMaterials').onclick = () => {
+    navigate('materials')
+  }
+
+  document.getElementById('navMarketplace').onclick = () => {
+    navigate('marketplace')
   }
 
   document.getElementById('navLogout').onclick = async () => {
@@ -83,6 +119,11 @@ async function render() {
 
     case 'materials':
       renderMaterials(sessionCache, page)
+      break
+
+    // 👉 ROUTE MARKETPLACE
+    case 'marketplace':
+      marketplacePage(sessionCache, page)
       break
 
     default:
